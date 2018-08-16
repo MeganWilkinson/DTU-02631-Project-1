@@ -1,4 +1,5 @@
-#' Reads in the data in the file named filename
+#' @author Megan Wilkinson
+#' @description Reads in the data in the file named filename
 #' 
 #' @param filename The name of the file of data
 #' @return The data in filename, an Nx3 matrix.
@@ -51,28 +52,39 @@ dataPlot <- function(data) {
   # Insert your code here
 }
 
+
+#' @author Megan Wilkinson
+#' @description The main program script
 done <- FALSE
 action <- ""
+data <- NULL
+statistic <- c("’Mean Temperature", "Mean Growth rate", "Std Temperature", "Std Growth rate", "Rows", "Mean Cold Growth rate", "Mean Hot Growth rate")
 menu <- "1. Load data\n2. Filter data\n3. Display statistics\n4. Generate plots\n5.quit"
 cat(menu)
 
 while (!done) {
   action <- suppressWarnings(as.numeric(readline("Enter the number of which action you would like to perform:")))
   if (is.na(action)) {
-    cat("Not a valid input. Please input a number from 1 to 5.\n")
+    cat("Invalid input. Please input a number from 1 to 5.\n")
   } else if (action == 1) {
-    
+    dataname <- readline("Enter the name of the data file:")
+    data <- dataLoad(dataname)
   } else if (action == 2) {
-    
+    filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply (1. bacteria or 2. growthrate):")))
+    if (is.na(action)) {
+      cat("Invalid input. Please input 1(bacteria) or 2(growth rate)")
+    } else if (filterType == 1) {
+      
+    } else if (filterType == 2) {
+      
+    }
   } else if (action == 3) {
-    
+    cat("Enter one of the following number to show statistics:\n")
   } else if (action == 4) {
-    
+    dataPlot(data)
   } else if (action == 5) {
     done <- TRUE
   } else {
     cat("Not a valid input. Please input a number from 1 to 5.\n")
   }
 }
-
-5
