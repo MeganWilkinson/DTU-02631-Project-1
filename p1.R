@@ -64,27 +64,27 @@ cat(menu)
 
 while (!done) {
   action <- suppressWarnings(as.numeric(readline("Enter the number of which action you would like to perform:")))
-  if (is.na(action)) {
+  if (is.na(action)) { # handle NaNs
     cat("Invalid input. Please input a number from 1 to 5.\n")
-  } else if (action == 1) {
+  } else if (action == 1) { # load data
     dataname <- readline("Enter the name of the data file:")
     data <- dataLoad(dataname)
-  } else if (action == 2) {
+  } else if (action == 2) { # filter data
     filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply (1. bacteria or 2. growthrate):")))
     if (is.na(action)) {
       cat("Invalid input. Please input 1(bacteria) or 2(growth rate)")
-    } else if (filterType == 1) {
+    } else if (filterType == 1) { 
       
     } else if (filterType == 2) {
       
     }
-  } else if (action == 3) {
+  } else if (action == 3) { # display statistics
     cat("Enter one of the following number to show statistics:\n")
-  } else if (action == 4) {
+  } else if (action == 4) { # generate plots
     dataPlot(data)
-  } else if (action == 5) {
+  } else if (action == 5) { # quit
     done <- TRUE
-  } else {
+  } else { # handle out of range numbers
     cat("Not a valid input. Please input a number from 1 to 5.\n")
   }
 }
