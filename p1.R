@@ -7,8 +7,8 @@ dataLoad <- function(filename) {
   ## get data from space-seperated table and turn it into a matrix
   dataframe <- read.table(filename, sep=" ", header=FALSE)
   data <- data.matrix(dataframe)
-  names(data) <- c("Temperature", "Growthrate", "Bacteria")
-  
+  colnames(data) <- c("Temperature", "Growthrate", "Bacteria")
+
   todelete <- rep(TRUE, nrow(data)) # vector to keep track of invalid rows to remove
   
   ## find invalid rows
@@ -86,8 +86,46 @@ dataStatistics <- function(data, statistic) {
 #'             Growth rate, and Bacteria
 dataPlot <- function(data) {
   # Number of Bacteria Bar Plot
-  barplot(data$Bacteria, main = "Number of Bacteria", xlab = "Type of Bacteria")
+  num1 <- nrow(data[data[,3] == 1,,drop=FALSE])
+  num2 <- nrow(data[data[,3] == 2,,drop=FALSE])
+  num3 <- nrow(data[data[,3] == 3,,drop=FALSE])
+  num4 <- nrow(data[data[,3] == 4,,drop=FALSE])
+  counts <- c("Salmonella enterica"=num1, "Bacillus cereus"=num2, "Listeria"=num3, "Brochothrix thermosphacta"=num4)
+  barplot(counts, xlab="Bacteria", ylab="Number of Bacteria")
+  title("Number of Bacteria Bar Plot")
   
+  # Growth Rate by Temp Line Chart
+  colors <- rainbow(4)
+  linetype <- c(1:4)
+  plotchar <- seq(18, 22,1)
+  b1 <- data[data[,3] == 1,,drop=FALSE]
+  b1 <- b1[order(b1[,1]),]
+  y1 <- b1[,2]
+  x1 <- b1[,1]
+  b2 <- data[data[,3] == 2,,drop=FALSE]
+  b2 <- b2[order(b2[,1]),]
+  y2 <- b2[,2]
+  x2 <- b2[,1]
+  b3 <- data[data[,3] == 3,,drop=FALSE]
+  b3 <- b3[order(b3[,1]),]
+  y3 <- b3[,2]
+  x3 <- b3[,1]
+  b4 <- data[data[,3] == 4,,drop=FALSE]
+  b4 <- b4[order(b4[,1]),]
+  y4 <- b4[,2]
+  x4 <- b4[,1]
+  # x and y axis range
+  xrange <- c(10,60)
+  yrange <- c(0,max(data[,2]))
+  
+  # the plot
+  plot(x1,y1,type = "o", col = "red", xlab = "Temperature in Celcius", ylab = "Growth Rate",
+       main = "Bacteria Growth", xlim=xrange, ylim = yrange)
+  lines(x2,y2, type="o", col="blue")
+  lines(x3,y3, type="o", col="green")
+  lines(x4,y4, type="o", col="purple")
+  legend(xrange[1], yrange[2], cex=0.8, col = colors, pch=plotchar, title="Bacteria", legend=c("Salmonella enterica", "Bacillus cereus", "Listeria", "Brochothrix thermosphacta"))
+
 }
 
 
@@ -127,13 +165,11 @@ while (!done) {
       } else if (filterType == 1) { 
         bacteria <- suppressWarnings(as.numeric(readline("Enter which bacteria you would like to filter for(e.g. only show Listeria):\n1. Salmonella enterica\n2. Bacillus cereus\n3. Listeria\n4. Brochothrix thermosphacta")))
         data <- data[data[,3] == bacteria,,drop=FALSE]
-        print(data)
       } else if (filterType == 2) {
         lowerbound <- suppressWarnings(as.double(readline("Enter the LOWERBOUND for growth rates you would like to filter for:")))
         upperbound <- suppressWarnings(as.double(readline("Enter the UPPERBOUND for growth rates you would like to filter for:")))
         data <- data[data[,2] >= lowerbound,,drop=FALSE]
         data <- data[data[,2] <= upperbound,,drop=FALSE]
-        print(data)
       }
     }
   } else if (action == 3) { # display statistics
