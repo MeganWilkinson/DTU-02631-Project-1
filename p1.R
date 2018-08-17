@@ -5,7 +5,7 @@
 #' @return The data in filename, an Nx3 matrix.
 dataLoad <- function(filename) {
   # Insert your code here
-  dataframe <- read.table(filename, sep=" ",header = FALSE)
+  dataframe <- read.table(filename, sep=" ", header=FALSE)
   data <- data.matrix(dataframe)
   todelete <- rep(TRUE, nrow(data))
   for (row in 1:nrow(data)) {
@@ -31,11 +31,42 @@ dataLoad <- function(filename) {
 
 }
 
+#' @author Megan Coleman
+#' @description Calculates statistics based on a matrix of data
+#' 
+#' @param data, statistic describe the matrix data set and statistic sought
+#' @return The calculated statistic
 dataStatistics <- function(data, statistic) {
-  # Insert your code here
+  # access the different columns of data as vectors
+  temps     <- data[,1] # temperature data
+  growth    <- data[,2] # growth rate data
+  bacteria  <- data[,3] # bacteria    data
+  
+  if(statistic == "Mean Temperature")     # calculates vector mean with NA values
+    result <- mean(temps, trim=0, na.rm=FALSE) 
+  
+  else if(statistic == "Mean Growth rate") # calculates vector mean with NA values
+    result <- mean(growth, trim=0, na.rm=FALSE)
+  
+  else if(statistic == "Std Temperature")
+    result <- d(temps, na.rm = FALSE)
+  
+  else if(statistic == "Std Growth rate") 
+    result <- sd(growth, na.rm = FALSE)
+  
+  else if(statistic == "Rows")
+    result <- nrow(data)
+  
+  else if(statistic == "Mean Cold Growth Rate")  # calculates vector mean withOUT NA values
+    result <- mean(temps < 20 , trim=0, na.rm=TRUE)
+  
+  else if(statistic == "Mean Hot Growth rate")  # calculates vector mean withOUT NA values
+    result <- mean(temps > 50 , trim=0, na.rm=TRUE)
+  
   return(result)
 }
 
+#' @author Megan Coleman
 #' @description Displays two plots:
 #'  1. "Number of bacteria": A bar plot of the number of
 #'     Bacteria in the data
@@ -50,7 +81,9 @@ dataStatistics <- function(data, statistic) {
 #' @param data An Nx3 matrix with columns Temperature, 
 #'             Growth rate, and Bacteria
 dataPlot <- function(data) {
-  # Insert your code here
+  # Number of Bacteria Bar Plot
+  barplot(data$Bacteria, main = "Number of Bacteria", xlab = "Type of Bacteria")
+  
 }
 
 
@@ -79,8 +112,8 @@ while (!done) {
       cat("No such file exists")
     }
   } else if (action == 2) { # filter data
-    filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply (1. bacteria or 2. growthrate):")))
-    if (is.na(action)) {
+    filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply:\n1. bacteria or 2. growthrate):")))
+    if (is.na(action) || (filterType != 1 && filterType != 2)) {
       cat("Invalid input. Please input 1(bacteria) or 2(growth rate)")
     } else if (filterType == 1) { 
       if (is.null(data)) {
