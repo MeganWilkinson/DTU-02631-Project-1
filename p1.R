@@ -4,10 +4,14 @@
 #' @param filename The name of the file of data
 #' @return The data in filename, an Nx3 matrix.
 dataLoad <- function(filename) {
-  # Insert your code here
+  ## get data from space-seperated table and turn it into a matrix
   dataframe <- read.table(filename, sep=" ", header=FALSE)
   data <- data.matrix(dataframe)
-  todelete <- rep(TRUE, nrow(data))
+  names(data) <- c("Temperature", "Growthrate", "Bacteria")
+  
+  todelete <- rep(TRUE, nrow(data)) # vector to keep track of invalid rows to remove
+  
+  ## find invalid rows
   for (row in 1:nrow(data)) {
     temp <- data[row, 1]
     growthrate <- data[row, 2]
@@ -27,8 +31,8 @@ dataLoad <- function(filename) {
       todelete[row] <- FALSE
     }
   }
+  
   return(data[todelete,])
-
 }
 
 #' @author Megan Coleman
@@ -93,13 +97,14 @@ done <- FALSE
 action <- ""
 data <- NULL
 
-# const variables
+## const variables
 statistic.v <- c("’Mean Temperature", "Mean Growth rate", "Std Temperature", "Std Growth rate", "Rows", "Mean Cold Growth rate", "Mean Hot Growth rate")
 statistics.menu <- "1. Mean (average) temperature\n2. Mean (average) growth rate\n3.Standard deviation of temperature\n4. Standard deviation of growth rate\n5. The total number of rows in the data\n6. Mean (average) growth rate when temperature is less than 20 degrees\n7. Mean (average) growth rate when temperatureis greater than 50 degrees"
 menu <- "1. Load data\n2. Filter data\n3. Display statistics\n4. Generate plots\n5. quit"
 
-cat(menu)
+cat(menu) # print main menu
 
+## loop until user ends the script
 while (!done) {
   action <- suppressWarnings(as.numeric(readline("Enter the number of which action you would like to perform:")))
   if (is.na(action)) { # handle NaNs
@@ -112,37 +117,44 @@ while (!done) {
       cat("No such file exists")
     }
   } else if (action == 2) { # filter data
-    filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply:\n1. bacteria or 2. growthrate):")))
-    if (is.na(action) || (filterType != 1 && filterType != 2)) {
-      cat("Invalid input. Please input 1(bacteria) or 2(growth rate)")
-    } else if (filterType == 1) { 
-      if (is.null(data)) {
-        cat("Please input data.")
-      } else {
-        
-      }
-    } else if (filterType == 2) {
-      if (is.null(data)) {
-        cat("Please input data.")
-      } else {
-        
+    if (is.null(data)) {
+      cat("Please input data first.")
+      next
+    } else {
+      filterType <- suppressWarnings(as.numeric(readline("Enter the filter type you would like to apply:\n1. Filter by Bacteria\n2. Filter by Growth Rate:")))
+      if (is.na(action) || (filterType != 1 && filterType != 2)) {
+        cat("Invalid input. Please input 1(bacteria) or 2(growth rate)")
+      } else if (filterType == 1) { 
+        bacteria <- suppressWarnings(as.numeric(readline("Enter which bacteria you would like to filter for(e.g. only show Listeria):\n1. Salmonella enterica\n2. Bacillus cereus\n3. Listeria\n4. Brochothrix thermosphacta")))
+        data <- data[data[,3] == bacteria,,drop=FALSE]
+        print(data)
+      } else if (filterType == 2) {
+        lowerbound <- suppressWarnings(as.double(readline("Enter the LOWERBOUND for growth rates you would like to filter for:")))
+        upperbound <- suppressWarnings(as.double(readline("Enter the UPPERBOUND for growth rates you would like to filter for:")))
+        data <- data[data[,2] >= lowerbound,,drop=FALSE]
+        data <- data[data[,2] <= upperbound,,drop=FALSE]
+        print(data)
       }
     }
   } else if (action == 3) { # display statistics
-    cat("Enter one of the following numbers to show a statistic:\n")
-    cat(statistics.menu)
-    statistic <- suppressWarnings(as.numeric(readline()))
-    if (is.na(statistic) || statistic < 1 || statistic > 7) {
-      cat("Invalid input. Please input a number 1 to 7")
+    if (is.null(data)) {
+      cat("Please input data first.")
     } else {
-      if (is.null(data)) {
-        cat("Please input data.")
+      cat("Enter one of the following numbers to show a statistic:\n")
+      cat(statistics.menu)
+      statistic <- suppressWarnings(as.numeric(readline()))
+      if (is.na(statistic) || statistic < 1 || statistic > 7) {
+        cat("Invalid input. Please input a number 1 to 7")
       } else {
         dataStatistics(data, statistic.v[statistic])
-      }
-    } 
+      } 
+    }
   } else if (action == 4) { # generate plots
-    dataPlot(data)
+    if (is.null(data)) {
+      cat("Please input data first.")
+    } else {
+      dataPlot(data)
+    }
   } else if (action == 5) { # quit
     done <- TRUE
   } else { # handle out of range numbers
